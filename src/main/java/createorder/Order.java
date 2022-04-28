@@ -3,9 +3,10 @@ package createorder;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
-public class CreateOrderRequest {
+public class Order {
     private String firstName;
     private String lastName;
     private String address;
@@ -14,9 +15,9 @@ public class CreateOrderRequest {
     private int rentTime;
     private String deliveryDate;
     private String comment;
-    private ArrayList<String> color;
+    private List<String> color;
 
-    public CreateOrderRequest(String firstName, String lastName, String address, int metroStation, String phone, int rentTime, String deliveryDate, String comment) {
+    public Order(String firstName, String lastName, String address, int metroStation, String phone, int rentTime, String deliveryDate, String comment) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -27,7 +28,7 @@ public class CreateOrderRequest {
         this.comment = comment;
     }
 
-    public CreateOrderRequest(String firstName, String lastName, String address, int metroStation, String phone, int rentTime, String deliveryDate, String comment, ArrayList<String> color) {
+    public Order(String firstName, String lastName, String address, int metroStation, String phone, int rentTime, String deliveryDate, String comment, List<String> color) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -39,6 +40,6 @@ public class CreateOrderRequest {
         this.color = color;
     }
 
-    public CreateOrderRequest() {
+    public Order() {
     }
 }

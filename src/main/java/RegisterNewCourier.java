@@ -3,6 +3,7 @@ import lombok.Data;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static io.restassured.RestAssured.given;
 
@@ -12,17 +13,18 @@ public class RegisterNewCourier {
     private String login;
     private String password;
     private String firstName;
+    private HashMap<String, String> account = new HashMap<>();
 
     public RegisterNewCourier() {
     }
 
-    public RegisterNewCourier(String login, String password, String firstName) {
-        this.login = login;
-        this.password = password;
-        this.firstName = firstName;
+    public RegisterNewCourier(HashMap<String, String> account) {
+        this.login = account.get("login");
+        this.password = account.get("password");
+        this.firstName = account.get("firstName");
     }
 
-    public ArrayList<String> registerNewCourierAndReturnLoginPassword(){
+    public ArrayList<String> registerNewCourierAndReturnLoginPassword() {
 
         // с помощью библиотеки RandomStringUtils генерируем логин
         // метод randomAlphabetic генерирует строку, состоящую только из букв, в качестве параметра передаём длину строки
@@ -41,7 +43,7 @@ public class RegisterNewCourier {
                 + "\"firstName\":\"" + courierFirstName + "\"}";
 
         // отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response класса Response
-        Response response =  given()
+        Response response = given()
                 .header("Content-type", "application/json")
                 .and()
                 .body(registerRequestBody)

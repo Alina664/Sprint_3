@@ -2,21 +2,16 @@ import orderlist.OrderListAnswer;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+
+import java.net.HttpURLConnection;
 
 import static io.restassured.RestAssured.given;
 
 @Epic("Получение списка заказов")
-public class OrderListTest {
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
-    }
+public class OrderListTest extends BaseTest {
 
     @Test
     @DisplayName("Получение списка заказов без courierId")
@@ -27,12 +22,12 @@ public class OrderListTest {
                         .header("Content-type", "application/json")
                         .when()
                         .get("/api/v1/orders");
-        response.then().assertThat().statusCode(200);
+        response.then().assertThat().statusCode(HttpURLConnection.HTTP_OK);
     }
 
     @Test
-    @DisplayName("Получение списка заказов без courierId")
-    @Description("Получение списка заказов без courierId. В ответ должен вернуться не пустой список с заказов")
+    @DisplayName("Проверка количества заказов без courierId")
+    @Description("Проверка количества заказов без courierId. В ответ должен вернуться не пустой список с заказов")
     public void orderListIsNotNull() {
         OrderListAnswer response =
                 given()

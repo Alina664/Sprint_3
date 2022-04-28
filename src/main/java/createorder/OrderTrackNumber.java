@@ -3,14 +3,14 @@ package createorder;
 import lombok.Data;
 
 @Data
-public class CreateOrderAnswer {
+public class OrderTrackNumber {
 
     private int track;
 
-    public CreateOrderAnswer(int track) {
+    public OrderTrackNumber(int track) {
         this.track = track;
     }
 
-    public CreateOrderAnswer() {
+    public OrderTrackNumber() {
     }
 }

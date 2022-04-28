@@ -3,14 +3,14 @@ package findlogin;
 import lombok.Data;
 
 @Data
-public class FindLoginCourierRequest {
+public class CourierAccount {
     private String login;
     private String password;
 
-    public FindLoginCourierRequest() {
+    public CourierAccount() {
     }
 
-    public FindLoginCourierRequest(String login, String password) {
+    public CourierAccount(String login, String password) {
         this.login = login;
         this.password = password;
     }

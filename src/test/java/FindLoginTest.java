@@ -1,13 +1,12 @@
-import findlogin.FindLoginCourierAnswer;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 import static io.restassured.RestAssured.given;
@@ -15,13 +14,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @Epic("Логин курьера в системе")
-public class FindLoginTest {
+public class FindLoginTest extends BaseTest {
     // создаём список, для логина и пароля
     ArrayList<String> loginPass = new ArrayList<>();
 
     @Before
-    public void setUp() {
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru";
+    public void newCourier() {
         //создаем курьера, с рандомными параметрами
         RegisterNewCourier courier = new RegisterNewCourier();
         //записываем в переменную, чтобы использовать в тестах дальше
@@ -43,7 +41,7 @@ public class FindLoginTest {
                         .post("/api/v1/courier/login");
         response.then().assertThat().body("id", notNullValue())
                 .and()
-                .statusCode(200);
+                .statusCode(HttpURLConnection.HTTP_OK);
     }
 
 
@@ -61,7 +59,7 @@ public class FindLoginTest {
                         .post("/api/v1/courier/login");
         response.then().assertThat().body("message", equalTo("Недостаточно данных для входа"))
                 .and()
-                .statusCode(400);
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST);
     }
 
     @Test
@@ -78,7 +76,7 @@ public class FindLoginTest {
                         .post("/api/v1/courier/login");
         response.then().assertThat().body("message", equalTo("Недостаточно данных для входа"))
                 .and()
-                .statusCode(400);
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST);
     }
 
     @Test
@@ -87,18 +85,8 @@ public class FindLoginTest {
     public void findCourierWithNotExistLoginPassword() {
         //сперва удалим пользователя, если он есть в системе
         String json = String.format("{\"login\": \"%s\", \"password\": \"%s\"}", loginPass.get(0), loginPass.get(1));
-        //ищем id нашего пользователя, чтобы его удалить
-        FindLoginCourierAnswer findLoginCourierAnswer = given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(json)
-                .when()
-                .post("/api/v1/courier/login").as(FindLoginCourierAnswer.class);
         //отправляем запрос на его удаление
-        given()
-                .header("Content-type", "application/json")
-                .when()
-                .delete("/api/v1/courier/" + findLoginCourierAnswer.getId());
+        deleteCourier(loginPass.get(0), loginPass.get(1));
         //теперь проверяем статус и сообщение, при отправке запроса на несуществующего пользователя
         Response response =
                 given()
@@ -109,7 +97,7 @@ public class FindLoginTest {
                         .post("/api/v1/courier/login");
         response.then().assertThat().body("message", equalTo("Учетная запись не найдена"))
                 .and()
-                .statusCode(404);
+                .statusCode(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
     @Test
@@ -126,7 +114,7 @@ public class FindLoginTest {
                         .post("/api/v1/courier/login");
         response.then().assertThat().body("message", equalTo("Учетная запись не найдена"))
                 .and()
-                .statusCode(404);
+                .statusCode(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
     @Test
@@ -143,25 +131,11 @@ public class FindLoginTest {
                         .post("/api/v1/courier/login");
         response.then().assertThat().body("message", equalTo("Учетная запись не найдена"))
                 .and()
-                .statusCode(404);
+                .statusCode(HttpURLConnection.HTTP_NOT_FOUND);
     }
 
     @After
-    @Description("Удаляем курьера которого создали")
     public void deleteCourier() {
-        String json = String.format("{\"login\": \"%s\", \"password\": \"%s\"}", loginPass.get(0), loginPass.get(1));
-
-        FindLoginCourierAnswer findLoginCourierAnswer = given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(json)
-                .when()
-                .post("/api/v1/courier/login").as(FindLoginCourierAnswer.class);
-
-
-        given()
-                .header("Content-type", "application/json")
-                .when()
-                .delete("/api/v1/courier/" + findLoginCourierAnswer.getId());
+        deleteCourier(loginPass.get(0), loginPass.get(1));
     }
 }
