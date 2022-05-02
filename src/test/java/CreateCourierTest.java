@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -24,20 +25,17 @@ public class CreateCourierTest extends BaseTest {
     // метод для шага "Отправить запрос":
     @Step("Send POST request /api/v1/courier")
     public Response sendPostRequestCourier(RegisterNewCourier registerNewCourier) {
-        Response response =
-                given()
+        return given()
                         .header("Content-type", "application/json")
                         .and()
                         .body(registerNewCourier)
                         .when()
                         .post("/api/v1/courier");
-        return response;
     }
 
     @Step("Create courier")
     public RegisterNewCourier registerCourier(HashMap<String, String> account) {
-        RegisterNewCourier registerCourier = new RegisterNewCourier(account);
-        return registerCourier;
+        return new RegisterNewCourier(account);
     }
 
     @Step("Compare result HTTP_CREATED")
@@ -66,9 +64,7 @@ public class CreateCourierTest extends BaseTest {
     @DisplayName("Создаем курьера с полными данными")
     @Description("Проверяем, что курьера можно создать. Курьер с полными данными login alina22222, password 1234. Ожидаемый код ответа 201")
     public void createCourierWithLoginPasswordAndFirstName() {
-        account.put("login", login);
-        account.put("password", password);
-        account.put("firstName", firstName);
+        account.putAll(Map.of("login", login,"password", password,"firstName", firstName));
         RegisterNewCourier registerNewCourier = registerCourier(account);
         Response response = sendPostRequestCourier(registerNewCourier);
         compareBodyMessageOkAndStatusHttpCreated(response);
@@ -79,8 +75,7 @@ public class CreateCourierTest extends BaseTest {
     @DisplayName("Создаем курьера без имени")
     @Description("Проверяем, что курьера можно создать. Курьер без имени, с login alina22222, password 1234. Ожидаемый код ответа 201")
     public void createCourierWithLoginAndPassword() {
-        account.put("login", login);
-        account.put("password", password);
+        account.putAll(Map.of("login", login,"password", password));
         RegisterNewCourier registerNewCourier = new RegisterNewCourier(account);
         Response response = sendPostRequestCourier(registerNewCourier);
         compareBodyMessageOkAndStatusHttpCreated(response);
@@ -90,8 +85,7 @@ public class CreateCourierTest extends BaseTest {
     @DisplayName("Создаем курьера без логина")
     @Description("Создаем курьера без логина. Курьер с password 1234. Ожидаемый код ответа 400 и текст сообщения 'Недостаточно данных для создания учетной записи'")
     public void createCourierWithOutLogin() {
-        account.put("password", password);
-        account.put("firstName", firstName);
+        account.putAll(Map.of("password", password,"firstName", firstName));
         RegisterNewCourier registerNewCourier = registerCourier(account);
         Response response = sendPostRequestCourier(registerNewCourier);
         compareMessageAndStatusHttpBadRequest(response);
@@ -101,8 +95,7 @@ public class CreateCourierTest extends BaseTest {
     @DisplayName("Создаем курьера без пароля")
     @Description("Создаем курьера без пароля. Курьер с login alina22222. Ожидаемый код ответа 400 и текст сообщения 'Недостаточно данных для создания учетной записи'")
     public void createCourierWithOutPassword() {
-        account.put("login", login);
-        account.put("firstName", firstName);
+        account.putAll(Map.of("login", login,"firstName", firstName));
         RegisterNewCourier registerNewCourier = registerCourier(account);
         Response response = sendPostRequestCourier(registerNewCourier);
         compareMessageAndStatusHttpBadRequest(response);
@@ -112,9 +105,7 @@ public class CreateCourierTest extends BaseTest {
     @DisplayName("Нельзя создать двух одинаковых курьеров")
     @Description("Нельзя создать двух одинаковых курьеров. Ожидаемый код ответа 409 и текст сообщения 'Этот логин уже используется'")
     public void createCourierWithFullDuplicateLoginPasswordAndFirstName() {
-        account.put("login", login);
-        account.put("password", password);
-        account.put("firstName", firstName);
+        account.putAll(Map.of("login", login,"password", password,"firstName", firstName));
         RegisterNewCourier registerNewCourier = registerCourier(account);
         sendPostRequestCourier(registerNewCourier);
 
@@ -126,12 +117,8 @@ public class CreateCourierTest extends BaseTest {
     @DisplayName("Нельзя создать курьеров с одинаковым login")
     @Description("Нельзя создать курьеров с одинаковым login. Ожидаемый код ответа 409 и текст сообщения 'Этот логин уже используется'")
     public void createCourierWithDuplicateLogin() {
-        account.put("login", login);
-        account.put("password", password);
-        account.put("firstName", firstName);
-        accountDublicate.put("login", login);
-        accountDublicate.put("password", firstName);
-        accountDublicate.put("firstName", password);
+        account.putAll(Map.of("login", login,"password", password,"firstName", firstName));
+        accountDublicate.putAll(Map.of("login", login,"password", firstName,"firstName", password));
         RegisterNewCourier registerNewCourier = registerCourier(account);
         RegisterNewCourier duplicateLoginCourier = registerCourier(accountDublicate);
         sendPostRequestCourier(registerNewCourier);
