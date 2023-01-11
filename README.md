@@ -1,4 +1,5 @@
-Протестирован API учебного сервиса: http://qa-scooter.praktikum-services.ru/
+Автотесты на API учебного сервиса: http://qa-scooter.praktikum-services.ru/
+
 Его документация: https://qa-scooter.praktikum-services.ru/docs/
 
 Подготовка:
